@@ -1,0 +1,51 @@
+对接说明：
+Webservice 对接模式 
+（具体地址 请 现场人员 配置） 
+IP：http://xxx.xxx.xxx.xxx:8092/SOAP/?wsdl
+
+
+  传输格式采用JSON：
+1获取票型：GetTicket 返回标志JSON 格式 2个值分别是 票型编号 和 票型名称 
+
+2添加订单 AddBill：
+  参数如下：
+  
+  "billno": 订单编号
+  "clientcode":旅行社编号,
+  "clientname":旅行社名称,
+  "areacode":区域编号, 001 中国 没有就写001
+  "ticketcount":票数,
+  "paysum":总金额,
+  "username":取票人(导游)姓名,
+  "telno":取票人(导游)电话,
+  "certno":取票人(导游)身份证,
+  "Billdetail":订单明细
+               "ticketmodelname" : 票型名称
+               "ticketmodelcode" : 票型编号
+               "price" : 票型价格
+               "count" : 数量
+               "startdate" : 开始日期
+	             "enddate"   : 结束日期 
+
+返回值 ： 成功         ： success
+          订单已经存在 ：'BillNo already exists!'
+          没有对应单票 ：'没有对应单票! will cause rollback...'
+          没有对应票型 ：'没有对应票型! will cause rollback...'
+          其他异常     : '数据提交失败' 
+          	             
+	             
+****以上参数均为小写	           
+	             
+ eg:
+'{"billno":"100101011","clientcode":"00000000","clientname":"上海携程国际旅行社有限公司",
+"areacode":"001","ticketcount":2,"paysum":100.00,"username":"龙威","telno":"18980783123",
+"certno":"510106198908242510",
+"Billdetail":[{"ticketmodelname": "景区联票", "ticketmodelcode": "1012","price":40.0,"count":1,"startdate":"2016-07-03","enddate":"2016-07-07"}, 
+							{"ticketmodelname": "景区门票", "ticketmodelcode": "1013","price":60.0,"count":1,"startdate":"2016-07-03","enddate":"2016-07-07"}]}'
+							
+
+3 盘点是否已经出票接口 BillAreOrder:
+  参数：billno
+  eg: BillAreOrder('201512240015918003')
+  返回值：0 没有出票
+          'BillNo already Order a ticket !'  已出票
