@@ -67,9 +67,10 @@ class WorldServiceIntf(DefinitionBase):  #this is a web service
             return 'No Date'
 
         for ticket in tickets:
-            ticketname = ticket['ticketmodelname'].encode('raw_unicode_escape')
-            ticketname = ticketname.decode('gbk')
-            ticket['ticketmodelname'] = ticketname
+            # ticketname = ticket['TICKETMODELNAME'].encode('raw_unicode_escape')
+            ticketname = ticket['TICKETMODELNAME'].decode('gbk')
+            # ticketname = ticketname.decode('gbk')
+            ticket['TICKETMODELNAME'] = ticketname
 
         data_string = json.dumps(tickets, ensure_ascii=False)
         return data_string
@@ -247,6 +248,7 @@ def Run_Tws():
     wsgi_app=wsgi.Application(soap_app)
     # print 'listening on 218.4.64.93:8092'
     # print 'wsdl is at: http://218.4.64.93:8092/SOAP/?wsdl'
+    # http://127.0.0.1:8733/SOAP/?wsdl
     run_twisted( ( (wsgi_app, "SOAP"),), int(sPort))
 
 
@@ -274,13 +276,16 @@ def GetDBConnet():
         os.system('cls')
 
         oracle_db.create_engine(user=sUser, password=sPassw, database=sDateBase, host=sIP)
-        print u'version 160801 普达措'
-        print sUser
-        print sDateBase
-        print 'datebaseIP:',sIP
-        print sWebSerIp,':',sPort
-        print u'保持窗口不要关闭！。。。'
-        return True
+        if oracle_db._db_ctx.connection is not None:
+            print u'version 160801 普达措'
+            print sUser
+            print sDateBase
+            print 'datebaseIP:',sIP
+            print sWebSerIp,':',sPort
+            print u'保持窗口不要关闭！。。。'
+            return True
+        else:
+            GetDBConnet()
     except ImportError:
         print 'DateBaseServer error'
         raw_input()

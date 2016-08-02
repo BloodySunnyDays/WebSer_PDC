@@ -47,14 +47,14 @@ WebIP = '192.168.0.44'
 # print "11 " + repr(WebIP) +" 22"
 #
 print datetime.datetime.now()
-test=Client('http://'+WebIP+':8092/SOAP/?wsdl')
+test=Client('http://'+WebIP+':8733/SOAP/?wsdl')
 print datetime.datetime.now()
 # print test.service.FindUser(u'黄鑫军','330719198309053911')
 # print test.service.FindUser(u'严怡','320524196212084008')
 
-# sjson = test.service.GetTicket()
+sjson = test.service.GetTicket()
 #
-# print sjson
+print sjson
 
 sjson = u'''{"billno":"100101019","clientcode":"00000000","clientname":"上海携程国际旅行社有限公司",
 "areacode":"001","ticketcount":2,"paysum":100.00,"username":"龙威","telno":"18980783123","certno":"510106198908242510",
@@ -63,17 +63,17 @@ sjson = u'''{"billno":"100101019","clientcode":"00000000","clientname":"上海�
 # sjson = '{"billno":"100101011","clientcode":"00000000","clientname":"\xe4\xb8\x8a\xe6\xb5\xb7\xe6\x90\xba\xe7\xa8\x8b\xe5\x9b\xbd\xe9\x99\x85\xe6\x97\x85\xe8\xa1\x8c\xe7\xa4\xbe\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8","areacode":"001","ticketcount":2,"paysum":100.00,"username":"\xe9\xbe\x99\xe5\xa8\x81","telno":"18980783123","certno":"510106198908242510","Billdetail":[{"ticketmodelname": "\xe6\x99\xaf\xe5\x8c\xba\xe8\x81\x94\xe7\xa5\xa8", "ticketmodelcode": "1012"}, {"ticketmodelname": "\xe6\x99\xaf\xe5\x8c\xba\xe9\x97\xa8\xe7\xa5\xa8", "ticketmodelcode": "1013"}]}'
 
 # sjson = '11'
-print type(sjson)
-print repr(sjson)
+# print type(sjson)
+# print repr(sjson)
 
 
 # test.service.AddBill(repr(sjson))
 
 # print test.service.AddBill(sjson)
 
-print test.service.BillAreOrder('201512240015918003X')
+# print test.service.BillAreOrder('201512240015918003X')
 
-obj_json =  json.loads(sjson)
+# obj_json =  json.loads(sjson)
 
 
 
@@ -81,7 +81,7 @@ obj_json =  json.loads(sjson)
 #
 # print sbillno
 #
-print obj_json
+# print obj_json
 #
 # print type(obj_json)
 #
