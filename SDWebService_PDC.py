@@ -33,6 +33,10 @@ sDir = cur_file_dir() + '\\Config.ini'
 config = ConfigParser.ConfigParser()
 config.read(sDir)
 
+sDir_SQL = cur_file_dir() + '\\SQLConfig.ini'
+SQLConfig = ConfigParser.ConfigParser()
+SQLConfig.read(sDir_SQL)
+
 # 获取路径
 def cur_file_dir():
      path = sys.path[0]
@@ -47,6 +51,12 @@ sDateBase  = config.get('conn', 'DateBase')
 sUser      = config.get('conn', 'User')
 # sPassw     = config.get('conn', 'Paswd')
 sWebSerIp  = config.get('conn', 'WebSerIp')
+
+#SQL获取
+sql_web_billmain = SQLConfig.get("webSQL","billmain")
+sql_web_billdetail = SQLConfig.get("webSQL","billdetail")
+sql_web_checkdetail = SQLConfig.get("webSQL","checkdetail")
+
 
 
 
@@ -142,17 +152,27 @@ class WorldServiceIntf(DefinitionBase):  #this is a web service
             scertno = jsonobj['certno']
 
             # 主表
-            sSQL = "insert into web_billmain(id,billno,billoutno,traveldate,billdate,billstatus,billtype,webbillstatus,"\
+            # sSQL = "insert into web_billmain(id,billno,billoutno,traveldate,billdate,billstatus,billtype,webbillstatus,"\
+            #         "clientCode,clientname,areacode,ticketcount,paysum,paytype,payflag,username,"\
+            #         "telno,certtype,certno,create_time,modified_time,deleted) "\
+            #         "values (seq_webbillid.nextval,'" + strbillno + "','"+ strbillno +"',trunc(sysdate),sysdate,0,'pdc','valid',"\
+            #         "'"+sclientcode +"','" + sclientname + "','" + sareacode + "'," + str(nticketcount) + "," + str(cpaysum) + ","\
+            #         "'07',1, '"+susername+"','" +stelno +"','01','"+ scertno + "',sysdate,sysdate,0)"
+
+            sSQL_Exc = "insert into web_billmain(id,billno,billoutno,traveldate,billdate,billstatus,billtype,webbillstatus,"\
                     "clientCode,clientname,areacode,ticketcount,paysum,paytype,payflag,username,"\
                     "telno,certtype,certno,create_time,modified_time,deleted) "\
-                    "values (seq_webbillid.nextval,'" + strbillno + "','"+ strbillno +"',trunc(sysdate),sysdate,0,'pdc','valid',"\
-                    "'"+sclientcode +"','" + sclientname + "','" + sareacode + "'," + str(nticketcount) + "," + str(cpaysum) + ","\
-                    "'07',1, '"+susername+"','" +stelno +"','01','"+ scertno + "',sysdate,sysdate,0)"
+                    "values (seq_webbillid.nextval,?,?,trunc(sysdate),sysdate,0,'pdc','valid',"\
+                    " ?,?,?,?,?,"\
+                    "'07',1, ?,?,'01',?,sysdate,sysdate,0)"
+
+            sSQL_Exc = sql_web_billmain
 
             with open(sDir, 'a') as f:
-                f.write(str(sSQL.encode('gbk'))  +'\n')
+                f.write(str(sSQL_Exc.encode('gbk'))  +'\n')
 
-            oracle_db.update(str(sSQL.encode('gbk')))
+            oracle_db.update(str(sSQL_Exc.encode('gbk')),strbillno,strbillno,sclientcode,sclientname,sareacode,str(nticketcount),
+                             str(cpaysum),susername,stelno,scertno)
 
 
             # 明细
@@ -163,15 +183,22 @@ class WorldServiceIntf(DefinitionBase):  #this is a web service
                 startdate,enddate = name['startdate'],name['enddate']
 
 
-                sSQLDetail = "insert into web_billdetail(id,billno,billdate,traveldatetime,invalidatetime,billstatus,webbillstatus,"\
+                # sSQLDetail = "insert into web_billdetail(id,billno,billdate,traveldatetime,invalidatetime,billstatus,webbillstatus,"\
+                #              "billtype,tickettype,ticketmodelcode,ticketmodelname,ticketcount,ticketprice,paysum,payflag,create_time,"\
+                #              "deleted) values(seq_webbillid.nextval,'" +strbillno + "',sysdate,trunc(sysdate),date '"+enddate+"',0,'valid',"\
+                #              "'pdc',100001,'"+sticketmodelcode+"','"+sticketmodelname+"','"+str(ncount)+"','"+str(cprice)+"','"+str(ctotal)+"',1,sysdate,0)"
+
+                sSQLDetail_exc = "insert into web_billdetail(id,billno,billdate,traveldatetime,invalidatetime,billstatus,webbillstatus,"\
                              "billtype,tickettype,ticketmodelcode,ticketmodelname,ticketcount,ticketprice,paysum,payflag,create_time,"\
-                             "deleted) values(seq_webbillid.nextval,'" +strbillno + "',sysdate,trunc(sysdate),date '"+enddate+"',0,'valid',"\
-                             "'pdc',100001,'"+sticketmodelcode+"','"+sticketmodelname+"','"+str(ncount)+"','"+str(cprice)+"','"+str(ctotal)+"',1,sysdate,0)"
+                             "deleted) values(seq_webbillid.nextval,?,sysdate,trunc(sysdate),to_date(?,'yyyy-mm-dd'),0,'valid',"\
+                             "'pdc',100001,?,?,?,?,?,1,sysdate,0)"
+
+                sSQLDetail_exc = sql_web_billdetail
 
                 with open(sDir, 'a') as f:
-                    f.write(str(sSQLDetail.encode('gbk')) +'\n')
+                    f.write(str(sSQLDetail_exc.encode('gbk')) +'\n')
 
-                oracle_db.update(str(sSQLDetail.encode('gbk')))
+                oracle_db.update(str(sSQLDetail_exc.encode('gbk')),strbillno,enddate,sticketmodelcode,sticketmodelname,str(ncount),str(cprice),str(ctotal))
 
 
                 #判断
@@ -221,10 +248,21 @@ class WorldServiceIntf(DefinitionBase):  #this is a web service
                              +sticketmodelcode + "','" +sticketmodelname + "','" +str(cprice) + "',100001,'" + ticketkind + "', '"\
                              +str(seasontype) + "','" + str(ncount) + "',0,'" + str(ncount) + "',date '"+startdate+"',date '"+enddate+"')"
 
-                    with open(sDir, 'a') as f:
-                        f.write(str(sSQLCk.encode('gbk')) +'\n')
+                    sSQLCk_exc = "insert into web_checkdetail(id,billno,billdate,billtype,barcode,certno,clienttype,clientname,parkcode, "\
+                             "parkprice,ticketcode,ticketname,ticketmodel,ticketmodelname,ticketmodelprice,tickettype,ticketkindcode,"\
+                             "seasontype,usercount,useflag,leftcount,begindate,invalidate) values ( "\
+                             "seq_webbillid.nextval,?,sysdate,'pdc',?,?,'02', "\
+                             "?,?,?,?,?,?,?,? "\
+                             ",100001,?,? "\
+                             ",?,0,?,to_date(?,'yyyy-mm-dd'),to_date(?,'yyyy-mm-dd'))"
 
-                    oracle_db.update(str(sSQLCk.encode('gbk')))
+                    sSQLCk_exc = sql_web_checkdetail
+
+                    with open(sDir, 'a') as f:
+                        f.write(str(sSQLCk_exc.encode('gbk')) +'\n')
+
+                    oracle_db.update(str(sSQLCk_exc.encode('gbk')),strbillno,barcode,scertno,sclientname,parkcode,str(ticketprice),ticketcode,ticketname,
+                                     sticketmodelcode,sticketmodelname,str(cprice),ticketkind,str(seasontype),str(ncount),str(ncount),startdate,enddate)
 
 
             return 'success'
@@ -276,16 +314,14 @@ def GetDBConnet():
         os.system('cls')
 
         oracle_db.create_engine(user=sUser, password=sPassw, database=sDateBase, host=sIP)
-        if oracle_db._db_ctx.connection is not None:
-            print u'version 160801 普达措'
-            print sUser
-            print sDateBase
-            print 'datebaseIP:',sIP
-            print sWebSerIp,':',sPort
-            print u'保持窗口不要关闭！。。。'
-            return True
-        else:
-            GetDBConnet()
+        print u'version 160801 普达措'
+        print sUser
+        print sDateBase
+        print 'datebaseIP:',sIP
+        print sWebSerIp,':',sPort
+        print u'保持窗口不要关闭！。。。'
+        return True
+
     except ImportError:
         print 'DateBaseServer error'
         raw_input()

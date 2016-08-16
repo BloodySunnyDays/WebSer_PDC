@@ -52,11 +52,11 @@ print datetime.datetime.now()
 # print test.service.FindUser(u'黄鑫军','330719198309053911')
 # print test.service.FindUser(u'严怡','320524196212084008')
 
-sjson = test.service.GetTicket()
+# sjson = test.service.GetTicket()
 #
-print sjson
+# print sjson
 
-sjson = u'''{"billno":"100101019","clientcode":"00000000","clientname":"上海携程国际旅行社有限公司",
+sjson = u'''{"billno":"100101037","clientcode":"00000000","clientname":"上海携程国际旅行社有限公司",
 "areacode":"001","ticketcount":2,"paysum":100.00,"username":"龙威","telno":"18980783123","certno":"510106198908242510",
 "Billdetail":[{"ticketmodelname": "景区联票", "ticketmodelcode": "1011","price":40.0,"count":1,"startdate":"2016-07-03","enddate":"2016-07-07"},
 {"ticketmodelname": "景区门票", "ticketmodelcode": "1014","price":60.0,"count":1,"startdate":"2016-07-03","enddate":"2016-07-07"}]}'''
@@ -69,7 +69,7 @@ sjson = u'''{"billno":"100101019","clientcode":"00000000","clientname":"上海�
 
 # test.service.AddBill(repr(sjson))
 
-# print test.service.AddBill(sjson)
+print test.service.AddBill(sjson)
 
 # print test.service.BillAreOrder('201512240015918003X')
 
