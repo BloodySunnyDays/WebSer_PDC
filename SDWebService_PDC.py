@@ -51,6 +51,7 @@ sDateBase  = config.get('conn', 'DateBase')
 sUser      = config.get('conn', 'User')
 # sPassw     = config.get('conn', 'Paswd')
 sWebSerIp  = config.get('conn', 'WebSerIp')
+sTicketGroup = config.get('conn','TicketGroup')
 
 #SQL获取
 sql_web_billmain = SQLConfig.get("webSQL","billmain")
@@ -63,7 +64,7 @@ sql_web_checkdetail = SQLConfig.get("webSQL","checkdetail")
 class WorldServiceIntf(DefinitionBase):  #this is a web service
     @soap(_returns=String)    #声明一个服务，标识方法的参数以及返回值
     def GetTicket(self):
-        sSQL = "select ticketmodelcode,ticketmodelname from sys_ticketmodel "
+        sSQL = "select ticketmodelcode,ticketmodelname from sys_ticketmodel where ticketmodelgroupcode = " + str(sTicketGroup)
 
         fname = 'log'+str(datetime.date.today()) + '.txt'
         sDir = cur_file_dir() + '\\log\\'+fname
